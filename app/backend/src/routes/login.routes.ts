@@ -6,7 +6,7 @@ const loginController = new LoginController();
 
 const router = Router();
 
-router.get(
+router.post(
   '/',
   Validations.validateLogin,
   (req: Request, res: Response) => loginController.login(req, res),

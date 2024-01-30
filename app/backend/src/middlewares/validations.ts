@@ -5,8 +5,7 @@ export default class Validations {
     const { email, password } = req.body;
     const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!email) return res.status(400).json({ message: 'email missing' });
-    if (!password) return res.status(400).json({ message: 'password missing' });
+    if (!email || !password) return res.status(400).json({ message: 'All fields must be filled' });
 
     if (password.length < 6) {
       return res.status(400).json({ message: 'password must be at least 6 characters' });
