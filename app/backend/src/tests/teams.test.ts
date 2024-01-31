@@ -13,7 +13,7 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe('Seu teste', () => {
+describe('Teams tests', () => {
   it('Should return a team', async function() {
     sinon.stub(SequelizeTeams, 'findAll').resolves(teams as any);
 

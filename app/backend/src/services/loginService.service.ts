@@ -27,7 +27,7 @@ export default class LoginService {
       return { status: 'UNAUTHORIZED', data: { message: 'Invalid email or password' } };
     }
 
-    const payload = { sub: user.id, role: 'user', email: user.email };
+    const payload = { sub: user.id, role: user.role, email: user.email };
     const secret = process.env.JWT_SECRET ?? 'jwt_secret';
 
     const token = jwt.sign(payload, secret, { expiresIn: '7d' });
