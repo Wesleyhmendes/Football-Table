@@ -1,3 +1,4 @@
+import { ServiceMessage } from '../Interfaces/ServiceResponse';
 import { IMatches } from '../Interfaces/matches/IMatches';
 import SequelizeMatches from '../database/models/SequelizeMatches';
 import Teams from '../database/models/SequelizeTeams';
@@ -45,5 +46,17 @@ export default class MatchesModel implements IMatchesModel {
     });
 
     return filteredMatches;
+  }
+
+  async updateMatchProgress(idMatch: number): Promise<ServiceMessage> {
+    const match = await this.model.findByPk(idMatch);
+
+    if (match) {
+      await this.model
+        .update({ inProgress: false }, { where: { id: idMatch } });
+
+      return { message: 'Finished' };
+    }
+    return { message: 'Failed' };
   }
 }

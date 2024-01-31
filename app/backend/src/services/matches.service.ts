@@ -2,6 +2,10 @@ import { ServiceResponse } from '../Interfaces/ServiceResponse';
 import { IMatches } from '../Interfaces/matches/IMatches';
 import MatchesModel from '../models/MatchesModel';
 
+interface updateResponse {
+  message: string,
+}
+
 export default class MatchesService {
   constructor(
     private matchesModel = new MatchesModel(),
@@ -19,5 +23,15 @@ export default class MatchesService {
     const filteredMatches = await this.matchesModel.getFilteredMatches(progress);
 
     return { status: 'SUCCESSFUL', data: filteredMatches };
+  }
+
+  public async updateMatchProgress(id: number): Promise<ServiceResponse<updateResponse>> {
+    const update = await this.matchesModel.updateMatchProgress(id);
+
+    if (update.message) {
+      return { status: 'SUCCESSFUL', data: update };
+    }
+
+    return { status: 'INVALID_DATA', data: update };
   }
 }
