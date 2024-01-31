@@ -7,12 +7,8 @@ export default class Validations {
 
     if (!email || !password) return res.status(400).json({ message: 'All fields must be filled' });
 
-    if (password.length < 6) {
-      return res.status(400).json({ message: 'password must be at least 6 characters' });
-    }
-
-    if (!regexEmail.test(email)) {
-      return res.status(400).json({ message: 'You must use a valid email' });
+    if (!regexEmail.test(email) || password.length < 6) {
+      return res.status(400).json({ message: 'Invalid email or password' });
     }
 
     next();

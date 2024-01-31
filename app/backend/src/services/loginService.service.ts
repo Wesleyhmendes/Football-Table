@@ -15,12 +15,12 @@ export default class LoginService {
   public async login(email: string, password: string): Promise<ServiceResponse<LoginResponse>> {
     const user = await this.loginModel.findOne(email);
 
-    if (!user) return { status: 'NOT_FOUND', data: { message: 'User not found' } };
+    if (!user) return { status: 'UNAUTHORIZED', data: { message: 'Invalid email or password' } };
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return { status: 'UNAUTHORIZED', data: { message: 'Invalid credencials' } };
+      return { status: 'UNAUTHORIZED', data: { message: 'Invalid email or password' } };
     }
 
     const payload = { sub: user.id, role: 'user', email: user.email };
