@@ -7,10 +7,6 @@ type LoginResponse = {
   token: string
 };
 
-// type RoleResponse = {
-//   role: string
-// };
-
 export default class LoginService {
   constructor(
     private loginModel = new LoginModel(),

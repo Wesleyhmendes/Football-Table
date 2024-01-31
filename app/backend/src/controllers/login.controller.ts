@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import mapStatusHTTP from '../utils/mapStatusHTTP';
-import LoginService from '../services/loginService.service';
+import LoginService from '../services/login.service';
 
 export default class LoginController {
   constructor(
