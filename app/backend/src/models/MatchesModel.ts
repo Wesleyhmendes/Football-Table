@@ -25,4 +25,25 @@ export default class MatchesModel implements IMatchesModel {
 
     return dbResponse;
   }
+
+  async getFilteredMatches(progress: boolean): Promise<IMatches[]> {
+    const filteredMatches = await this.model.findAll({
+      where: { inProgress: progress },
+      include: [
+        {
+          model: Teams,
+          as: 'homeTeam',
+          attributes: ['teamName'],
+        },
+        {
+          model: Teams,
+          as: 'awayTeam',
+          attributes: ['teamName'],
+        },
+      ],
+      attributes: { exclude: ['home_team_id', 'away_team_id'] },
+    });
+
+    return filteredMatches;
+  }
 }

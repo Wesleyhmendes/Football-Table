@@ -12,4 +12,12 @@ export default class MatchesService {
 
     return { status: 'SUCCESSFUL', data: matches };
   }
+
+  public async getFilteredMatches(
+    progress: boolean,
+  ): Promise<ServiceResponse<IMatches[]>> {
+    const filteredMatches = await this.matchesModel.getFilteredMatches(progress);
+
+    return { status: 'SUCCESSFUL', data: filteredMatches };
+  }
 }
