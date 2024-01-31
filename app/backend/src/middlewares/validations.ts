@@ -9,7 +9,7 @@ export default class Validations {
     if (!email || !password) return res.status(400).json({ message: 'All fields must be filled' });
 
     if (!regexEmail.test(email) || password.length < 6) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
 
     next();
@@ -17,7 +17,7 @@ export default class Validations {
 
   static auth(req: Request, res: Response, next: NextFunction) {
     if (!req.headers.authorization) {
-      return res.status(400).json({ message: 'Token not found' });
+      return res.status(401).json({ message: 'Token not found' });
     }
 
     const [type, token] = req.headers.authorization.split(' ');
