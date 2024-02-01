@@ -44,4 +44,12 @@ export default class MatchesService {
 
     return { status: 'INVALID_DATA', data: { message: 'Match not found' } };
   }
+
+  public async createMatch(
+    matchInfos: IMatches,
+  ): Promise<ServiceResponse<IMatches>> {
+    const newMatch = await this.matchesModel.createMatch(matchInfos);
+
+    return { status: 'CREATED', data: newMatch };
+  }
 }

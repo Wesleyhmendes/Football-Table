@@ -17,9 +17,9 @@ export default class MatchesController {
       return res.status(mapStatusHTTP(serviceResponse.status)).json(serviceResponse.data);
     }
 
-    const serviceResponse = await this.matchesService.getAllMatches();
+    const { status, data } = await this.matchesService.getAllMatches();
 
-    res.status(mapStatusHTTP(serviceResponse.status)).json(serviceResponse.data);
+    res.status(mapStatusHTTP(status)).json(data);
   }
 
   public async updateMatchProgress(req: Request, res: Response) {
@@ -35,6 +35,14 @@ export default class MatchesController {
     const scoreboard = req.body;
 
     const { status, data } = await this.matchesService.updateMatchGoals(Number(id), scoreboard);
+
+    return res.status(mapStatusHTTP(status)).json(data);
+  }
+
+  public async createMatch(req: Request, res: Response) {
+    const matchInfo = req.body;
+
+    const { status, data } = await this.matchesService.createMatch(matchInfo);
 
     return res.status(mapStatusHTTP(status)).json(data);
   }

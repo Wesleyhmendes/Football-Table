@@ -70,9 +70,21 @@ export default class MatchesModel implements IMatchesModel {
 
     if (match) {
       await this.model
-        .update({ homeTeamGoals, awayTeamGoals }, { where: { id } });
-
+        .update(
+          { homeTeamGoals, awayTeamGoals },
+          { where: { id } },
+        );
       return match;
     }
+  }
+
+  async createMatch(matchInfos: IMatches): Promise<IMatches> {
+    const { homeTeamId, awayTeamId, homeTeamGoals, awayTeamGoals } = matchInfos;
+
+    const newMatch = await this.model.create(
+      { homeTeamId, homeTeamGoals, awayTeamId, awayTeamGoals, inProgress: true },
+    );
+
+    return newMatch;
   }
 }
