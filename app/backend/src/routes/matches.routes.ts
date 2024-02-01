@@ -13,6 +13,7 @@ router.get(
 
 router.post(
   '/',
+  Validations.auth,
   (req: Request, res: Response) => matchesController.createMatch(req, res),
 );
 
