@@ -3,6 +3,7 @@ import { IMatches } from '../Interfaces/matches/IMatches';
 import SequelizeMatches from '../database/models/SequelizeMatches';
 import Teams from '../database/models/SequelizeTeams';
 import { IMatchesModel } from '../Interfaces/matches/IMatchesModel';
+import { scoreboardType } from '../Interfaces/matches/IMatchesResponse';
 
 export default class MatchesModel implements IMatchesModel {
   private model = SequelizeMatches;
@@ -58,5 +59,20 @@ export default class MatchesModel implements IMatchesModel {
       return { message: 'Finished' };
     }
     return { message: 'Failed' };
+  }
+
+  async updateMatchGoals(
+    id: number,
+    scoreboard: scoreboardType,
+  ): Promise<IMatches | void> {
+    const match = await this.model.findByPk(id);
+    const { homeTeamGoals, awayTeamGoals } = scoreboard;
+
+    if (match) {
+      await this.model
+        .update({ homeTeamGoals, awayTeamGoals }, { where: { id } });
+
+      return match;
+    }
   }
 }

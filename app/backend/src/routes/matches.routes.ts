@@ -17,4 +17,10 @@ router.patch(
   (req: Request, res: Response) => matchesController.updateMatchProgress(req, res),
 );
 
+router.patch(
+  '/:id',
+  Validations.auth,
+  (req: Request, res: Response) => matchesController.updateMatchGoals(req, res),
+);
+
 export default router;

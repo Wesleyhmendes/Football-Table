@@ -1,10 +1,7 @@
-import { ServiceResponse } from '../Interfaces/ServiceResponse';
+import { serviceMessageResponse, scoreboardType } from '../Interfaces/matches/IMatchesResponse';
+import { ServiceMessage, ServiceResponse } from '../Interfaces/ServiceResponse';
 import { IMatches } from '../Interfaces/matches/IMatches';
 import MatchesModel from '../models/MatchesModel';
-
-interface updateResponse {
-  message: string,
-}
 
 export default class MatchesService {
   constructor(
@@ -25,13 +22,26 @@ export default class MatchesService {
     return { status: 'SUCCESSFUL', data: filteredMatches };
   }
 
-  public async updateMatchProgress(id: number): Promise<ServiceResponse<updateResponse>> {
+  public async updateMatchProgress(id: number): Promise<ServiceResponse<serviceMessageResponse>> {
     const update = await this.matchesModel.updateMatchProgress(id);
 
-    if (update.message) {
+    if (update.message === 'Finished') {
       return { status: 'SUCCESSFUL', data: update };
     }
 
     return { status: 'INVALID_DATA', data: update };
+  }
+
+  public async updateMatchGoals(
+    id: number,
+    scoreboard: scoreboardType,
+  ): Promise<ServiceResponse<IMatches | ServiceMessage>> {
+    const match = await this.matchesModel.updateMatchGoals(id, scoreboard);
+
+    if (match) {
+      return { status: 'SUCCESSFUL', data: match };
+    }
+
+    return { status: 'INVALID_DATA', data: { message: 'Match not found' } };
   }
 }
