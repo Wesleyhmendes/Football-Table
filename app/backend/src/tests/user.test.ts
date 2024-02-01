@@ -8,7 +8,7 @@ import * as bcrypt from 'bcryptjs';
 import SequelizeUser from '../database/models/SequelizeUsers';
 import { 
   user, token, simpleUser, noEmailUser, noPasswordUser, invalidEmailUser, shortPasswordUser,
-  noExistingMessageError, invalidEmailMessageError, invalidPasswordUser
+  noExistingMessageError, invalidEmailMessageError, invalidPasswordUser, responseToken
 } from './mocks/User.mocks';
 import Validations from '../middlewares/validations';
 
@@ -29,6 +29,13 @@ describe('User Tests', () => {
 
     expect(status).to.equal(200);
     expect(body).to.have.key('token');
+  });
+
+  it('Should return a role', async function() {
+    const { status, body } = await chai.request(app).get('/login/role').set('Authorization', responseToken);
+
+    expect(status).to.equal(200);
+    expect(body).to.deep.equal({ role: 'user' });
   });
 
   it('Should return an error when an email is not sent', async function() {
@@ -63,7 +70,7 @@ describe('User Tests', () => {
     .post('/login')
     .send(invalidEmailUser);
 
-    expect(status).to.equal(400);
+    expect(status).to.equal(401);
     expect(body).to.deep.equal(invalidEmailMessageError);
   });
 
@@ -74,7 +81,7 @@ describe('User Tests', () => {
     .post('/login')
     .send(shortPasswordUser);
 
-    expect(status).to.equal(400);
+    expect(status).to.equal(401);
     expect(body).to.deep.equal({ message: 'Invalid email or password' });
   });
 

@@ -22,8 +22,8 @@ export default class MatchesService {
     return { status: 'SUCCESSFUL', data: filteredMatches };
   }
 
-  public async updateMatchProgress(id: number): Promise<ServiceResponse<serviceMessageResponse>> {
-    const update = await this.matchesModel.updateMatchProgress(id);
+  public async finishMatch(id: number): Promise<ServiceResponse<serviceMessageResponse>> {
+    const update = await this.matchesModel.finishMatch(id);
 
     if (update.message === 'Finished') {
       return { status: 'SUCCESSFUL', data: update };

@@ -2,6 +2,8 @@ const token = {
   token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiaWF0IjoxNzA2NjY0NzI4LCJleHAiOjE3MDcyNjk1Mjh9.5-jAnVmwyxIjePkikTh-aBRIZV2lvwZcYG9QNbI1DLo"
 }
 
+const responseToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJ1c2VyIiwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE3MDY2NjE0ODAsImV4cCI6MTcwNzI2NjI4MH0.uh6BKaIat1mz1BWiSYnCCxMQwDOvdFmIGqq4p6gA3KA"
+
 const user = {
   id: 1,
   username: 'Admin',
@@ -47,6 +49,7 @@ export {
   token,
   simpleUser,
   noEmailUser,
+  responseToken,
   noPasswordUser,
   invalidEmailUser,
   shortPasswordUser,

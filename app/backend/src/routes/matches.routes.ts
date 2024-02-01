@@ -21,7 +21,7 @@ router.post(
 router.patch(
   '/:id/finish',
   Validations.auth,
-  (req: Request, res: Response) => matchesController.updateMatchProgress(req, res),
+  (req: Request, res: Response) => matchesController.finishMatch(req, res),
 );
 
 router.patch(

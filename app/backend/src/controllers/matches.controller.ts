@@ -22,10 +22,10 @@ export default class MatchesController {
     res.status(mapStatusHTTP(status)).json(data);
   }
 
-  public async updateMatchProgress(req: Request, res: Response) {
+  public async finishMatch(req: Request, res: Response) {
     const { id } = req.params;
 
-    const { status, data } = await this.matchesService.updateMatchProgress(Number(id));
+    const { status, data } = await this.matchesService.finishMatch(Number(id));
 
     return res.status(mapStatusHTTP(status)).json(data);
   }

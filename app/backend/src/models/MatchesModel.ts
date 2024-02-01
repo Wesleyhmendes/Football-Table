@@ -49,7 +49,7 @@ export default class MatchesModel implements IMatchesModel {
     return filteredMatches;
   }
 
-  async updateMatchProgress(idMatch: number): Promise<ServiceMessage> {
+  async finishMatch(idMatch: number): Promise<ServiceMessage> {
     const match = await this.model.findByPk(idMatch);
 
     if (match) {
