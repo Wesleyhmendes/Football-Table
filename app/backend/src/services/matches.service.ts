@@ -47,9 +47,9 @@ export default class MatchesService {
 
   public async createMatch(
     matchInfos: IMatches,
-  ): Promise<ServiceResponse<IMatches>> {
+  ): Promise<ServiceResponse<IMatches | ServiceMessage>> {
     const newMatch = await this.matchesModel.createMatch(matchInfos);
 
-    return { status: 'CREATED', data: newMatch };
+    return newMatch;
   }
 }

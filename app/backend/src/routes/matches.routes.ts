@@ -14,6 +14,7 @@ router.get(
 router.post(
   '/',
   Validations.auth,
+  Validations.match,
   (req: Request, res: Response) => matchesController.createMatch(req, res),
 );
 

@@ -1,4 +1,4 @@
-import { ServiceMessage } from '../Interfaces/ServiceResponse';
+import { ServiceMessage, ServiceResponse } from '../Interfaces/ServiceResponse';
 import { IMatches } from '../Interfaces/matches/IMatches';
 import SequelizeMatches from '../database/models/SequelizeMatches';
 import Teams from '../database/models/SequelizeTeams';
@@ -78,13 +78,20 @@ export default class MatchesModel implements IMatchesModel {
     }
   }
 
-  async createMatch(matchInfos: IMatches): Promise<IMatches> {
+  async createMatch(matchInfos: IMatches): Promise<ServiceResponse<IMatches | ServiceMessage>> {
     const { homeTeamId, awayTeamId, homeTeamGoals, awayTeamGoals } = matchInfos;
+
+    const verifyTeam1 = await this.model.findOne({ where: { homeTeamId } });
+    const verifyTeam2 = await this.model.findOne({ where: { awayTeamId } });
+
+    if (!verifyTeam1 || !verifyTeam2) {
+      return { status: 'NOT_FOUND', data: { message: 'There is no team with such id!' } };
+    }
 
     const newMatch = await this.model.create(
       { homeTeamId, homeTeamGoals, awayTeamId, awayTeamGoals, inProgress: true },
     );
 
-    return newMatch;
+    return { status: 'CREATED', data: newMatch };
   }
 }

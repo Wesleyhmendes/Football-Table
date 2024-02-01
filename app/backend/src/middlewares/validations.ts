@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
+import SequelizeMatches from '../database/models/SequelizeMatches';
 
 export default class Validations {
+  private model = SequelizeMatches;
+
   static validateLogin(req: Request, res: Response, next: NextFunction): Response | void {
     const { email, password } = req.body;
     const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -33,6 +36,17 @@ export default class Validations {
     } catch (err) {
       return res.status(401).json({ message: 'Invalid Token' });
     }
+    next();
+  }
+
+  static async match(req: Request, res: Response, next: NextFunction) {
+    const matchInfos = req.body;
+
+    if (matchInfos.awayTeamId === matchInfos.homeTeamId) {
+      return res.status(422).json({
+        message: 'It is not possible to create a match with two equal teams' });
+    }
+
     next();
   }
 }
