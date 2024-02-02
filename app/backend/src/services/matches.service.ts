@@ -52,16 +52,4 @@ export default class MatchesService {
 
     return newMatch;
   }
-
-  public async getLeaderBoardHome() {
-    const leaderBoard = await this.matchesModel.getOrderedLeaderboard('homeTeam', 'homeTeamGoals');
-
-    return { status: 'SUCCESSFUL', data: leaderBoard };
-  }
-
-  public async getLeaderBoardAway() {
-    const leaderBoard = await this.matchesModel.getOrderedLeaderboard('awayTeam', 'awayTeamGoals');
-
-    return { status: 'SUCCESSFUL', data: leaderBoard };
-  }
 }
