@@ -18,11 +18,6 @@ router.post(
   (req: Request, res: Response) => matchesController.createMatch(req, res),
 );
 
-router.get(
-  '/leaderboard/home',
-  (req: Request, res: Response) => matchesController.getLeaderBoard(req, res),
-);
-
 router.patch(
   '/:id/finish',
   Validations.auth,

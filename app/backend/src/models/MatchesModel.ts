@@ -5,6 +5,9 @@ import Teams from '../database/models/SequelizeTeams';
 import { IMatchesModel } from '../Interfaces/matches/IMatchesModel';
 import { scoreboardType } from '../Interfaces/matches/IMatchesResponse';
 
+type TeamLeaderboardParams = 'homeTeam' | 'awayTeam';
+type TeamLeaderboardParams2 = 'homeTeamGoals' | 'awayTeamGoals';
+
 export default class MatchesModel implements IMatchesModel {
   private model = SequelizeMatches;
   private teamModel = Teams;
@@ -98,11 +101,13 @@ export default class MatchesModel implements IMatchesModel {
 
   async formattedTeams() {
     const allMatches = await this.getFilteredMatches(false) as (SequelizeMatches & {
-      homeTeam: { teamName: string };awayTeam: { teamName: string } })[];
+      homeTeam: { teamName: string }; awayTeam: { teamName: string }
+    })[];
 
     const allTeams = await this.teamModel.findAll({ attributes: { exclude: ['id'] } });
 
-    const teams = allTeams.map(({ teamName }) => ({ name: teamName,
+    const teams = allTeams.map(({ teamName }) => ({
+      name: teamName,
       totalPoints: 0,
       totalGames: 0,
       totalVictories: 0,
@@ -117,48 +122,51 @@ export default class MatchesModel implements IMatchesModel {
     return { teams, allMatches };
   }
 
-  async getLeaderboardPoints() {
+  async getLeaderboardPoints(teamName: TeamLeaderboardParams, teamGoal: TeamLeaderboardParams2) {
     const { allMatches, teams: newTeams } = await this.formattedTeams();
 
     const updatedTeams = newTeams.map((newTeam) => {
       const team = { ...newTeam };
 
-      const matches = allMatches.filter((match) => match.homeTeam.teamName === team.name);
+      const matches = allMatches.filter((match) => match[teamName].teamName === team.name);
 
-      const homeWins = matches.filter((match) => match.homeTeamGoals > match.awayTeamGoals).length;
-      const homeLosses = matches
-        .filter((match) => match.homeTeamGoals < match.awayTeamGoals).length;
+      let wins; let losses;
+
+      if (teamName === 'homeTeam') {
+        wins = matches.filter((match) => match[teamGoal] > match.awayTeamGoals).length;
+        losses = matches.filter((match) => match[teamGoal] < match.awayTeamGoals).length;
+      } else {
+        wins = matches.filter((match) => match[teamGoal] > match.homeTeamGoals).length;
+        losses = matches.filter((match) => match[teamGoal] < match.homeTeamGoals).length;
+      }
 
       const draws = matches.filter((match) => match.homeTeamGoals === match.awayTeamGoals).length;
 
-      team.totalPoints += (3 * homeWins) + draws;
-      team.totalGames += matches.length;
-      team.totalVictories += homeWins;
-      team.totalDraws += draws;
-      team.totalLosses += homeLosses;
+      team.totalPoints += (3 * wins) + draws; team.totalGames += matches.length;
+      team.totalVictories += wins; team.totalDraws += draws; team.totalLosses += losses;
 
       return team;
     });
     return updatedTeams;
   }
 
-  async getLeaderboardGoals() {
-    const teams = await this.getLeaderboardPoints();
+  async getLeaderboardGoals(teamN: TeamLeaderboardParams, teamGoal: TeamLeaderboardParams2) {
+    const teams = await this.getLeaderboardPoints(teamN, teamGoal);
     const { allMatches } = await this.formattedTeams();
 
     const response = teams.map((singleTeam) => {
       const team = { ...singleTeam };
 
-      const goals = allMatches
-        .filter((match) => match.homeTeam.teamName === team.name).reduce((acc, crr) => {
-          acc.goalsFavor += crr.homeTeamGoals;
-          acc.goalsOwn += crr.awayTeamGoals;
+      const goals = allMatches.filter((m) => m[teamN].teamName === team.name).reduce((acc, crr) => {
+        if (teamN === 'homeTeam') {
+          acc.goalsFavor += crr.homeTeamGoals; acc.goalsOwn += crr.awayTeamGoals;
+        } else {
+          acc.goalsFavor += crr.awayTeamGoals; acc.goalsOwn += crr.homeTeamGoals;
+        }
+        return acc;
+      }, { goalsFavor: 0, goalsOwn: 0 });
 
-          return acc;
-        }, { goalsFavor: 0, goalsOwn: 0 });
-
-      team.goalsFavor += goals.goalsFavor;
-      team.goalsOwn += goals.goalsOwn;
+      team.goalsFavor += goals.goalsFavor; team.goalsOwn += goals.goalsOwn;
       team.goalsBalance += team.goalsFavor - team.goalsOwn;
       team.efficiency += Number(((team.totalPoints / (team.totalGames * 3)) * 100).toFixed(2));
 
@@ -168,8 +176,8 @@ export default class MatchesModel implements IMatchesModel {
     return response;
   }
 
-  async getOrderedLeaderboard() {
-    const leaderboard = await this.getLeaderboardGoals();
+  async getOrderedLeaderboard(teamName: TeamLeaderboardParams, teamGoal: TeamLeaderboardParams2) {
+    const leaderboard = await this.getLeaderboardGoals(teamName, teamGoal);
 
     const orderedLeaderboard = leaderboard.sort((a, b) => {
       if (b.totalPoints !== a.totalPoints) {
