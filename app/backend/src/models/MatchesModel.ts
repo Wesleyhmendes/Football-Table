@@ -110,6 +110,8 @@ export default class MatchesModel implements IMatchesModel {
       totalLosses: 0,
       goalsFavor: 0,
       goalsOwn: 0,
+      goalsBalance: 0,
+      efficiency: 0,
     }));
 
     return { teams, allMatches };
@@ -157,9 +159,30 @@ export default class MatchesModel implements IMatchesModel {
 
       team.goalsFavor += goals.goalsFavor;
       team.goalsOwn += goals.goalsOwn;
+      team.goalsBalance += team.goalsFavor - team.goalsOwn;
+      team.efficiency += Number(((team.totalPoints / (team.totalGames * 3)) * 100).toFixed(2));
 
       return team;
     });
+
     return response;
+  }
+
+  async getOrderedLeaderboard() {
+    const leaderboard = await this.getLeaderboardGoals();
+
+    const orderedLeaderboard = leaderboard.sort((a, b) => {
+      if (b.totalPoints !== a.totalPoints) {
+        return b.totalPoints - a.totalPoints;
+      }
+
+      if (b.goalsBalance !== a.goalsBalance) {
+        return b.goalsBalance - a.goalsBalance;
+      }
+
+      return b.goalsFavor - a.goalsFavor;
+    });
+
+    return orderedLeaderboard;
   }
 }

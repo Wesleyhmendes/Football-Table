@@ -54,7 +54,7 @@ export default class MatchesService {
   }
 
   public async getLeaderBoard() {
-    const leaderBoard = await this.matchesModel.getLeaderboardGoals();
+    const leaderBoard = await this.matchesModel.getOrderedLeaderboard();
 
     return { status: 'SUCCESSFUL', data: leaderBoard };
   }
