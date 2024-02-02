@@ -52,4 +52,10 @@ export default class MatchesService {
 
     return newMatch;
   }
+
+  public async getLeaderBoard() {
+    const leaderBoard = await this.matchesModel.getLeaderboardGoals();
+
+    return { status: 'SUCCESSFUL', data: leaderBoard };
+  }
 }

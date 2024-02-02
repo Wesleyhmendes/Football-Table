@@ -7,6 +7,7 @@ import { scoreboardType } from '../Interfaces/matches/IMatchesResponse';
 
 export default class MatchesModel implements IMatchesModel {
   private model = SequelizeMatches;
+  private teamModel = Teams;
 
   async findAll(): Promise<IMatches[]> {
     const dbResponse = await this.model.findAll({
@@ -93,5 +94,72 @@ export default class MatchesModel implements IMatchesModel {
     );
 
     return { status: 'CREATED', data: newMatch };
+  }
+
+  async formattedTeams() {
+    const allMatches = await this.getFilteredMatches(false) as (SequelizeMatches & {
+      homeTeam: { teamName: string };awayTeam: { teamName: string } })[];
+
+    const allTeams = await this.teamModel.findAll({ attributes: { exclude: ['id'] } });
+
+    const teams = allTeams.map(({ teamName }) => ({ name: teamName,
+      totalPoints: 0,
+      totalGames: 0,
+      totalVictories: 0,
+      totalDraws: 0,
+      totalLosses: 0,
+      goalsFavor: 0,
+      goalsOwn: 0,
+    }));
+
+    return { teams, allMatches };
+  }
+
+  async getLeaderboardPoints() {
+    const { allMatches, teams: newTeams } = await this.formattedTeams();
+
+    const updatedTeams = newTeams.map((newTeam) => {
+      const team = { ...newTeam };
+
+      const matches = allMatches.filter((match) => match.homeTeam.teamName === team.name);
+
+      const homeWins = matches.filter((match) => match.homeTeamGoals > match.awayTeamGoals).length;
+      const homeLosses = matches
+        .filter((match) => match.homeTeamGoals < match.awayTeamGoals).length;
+
+      const draws = matches.filter((match) => match.homeTeamGoals === match.awayTeamGoals).length;
+
+      team.totalPoints += (3 * homeWins) + draws;
+      team.totalGames += matches.length;
+      team.totalVictories += homeWins;
+      team.totalDraws += draws;
+      team.totalLosses += homeLosses;
+
+      return team;
+    });
+    return updatedTeams;
+  }
+
+  async getLeaderboardGoals() {
+    const teams = await this.getLeaderboardPoints();
+    const { allMatches } = await this.formattedTeams();
+
+    const response = teams.map((singleTeam) => {
+      const team = { ...singleTeam };
+
+      const goals = allMatches
+        .filter((match) => match.homeTeam.teamName === team.name).reduce((acc, crr) => {
+          acc.goalsFavor += crr.homeTeamGoals;
+          acc.goalsOwn += crr.awayTeamGoals;
+
+          return acc;
+        }, { goalsFavor: 0, goalsOwn: 0 });
+
+      team.goalsFavor += goals.goalsFavor;
+      team.goalsOwn += goals.goalsOwn;
+
+      return team;
+    });
+    return response;
   }
 }
