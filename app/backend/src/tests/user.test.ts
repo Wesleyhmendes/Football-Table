@@ -4,21 +4,23 @@ import * as chai from 'chai';
 import chaiHttp = require('chai-http');
 
 import { app } from '../app';
-import * as bcrypt from 'bcryptjs';
 import SequelizeUser from '../database/models/SequelizeUsers';
 import { 
-  user, token, simpleUser, noEmailUser, noPasswordUser, invalidEmailUser, shortPasswordUser,
-  noExistingMessageError, invalidEmailMessageError, invalidPasswordUser, responseToken
+  user, invalidToken, simpleUser, noEmailUser, noPasswordUser, invalidEmailUser, shortPasswordUser,
+  noExistingMessageError, invalidEmailMessageError, responseToken, invalidTypeToken
 } from './mocks/User.mocks';
 import Validations from '../middlewares/validations';
-
-import { Response } from 'superagent';
 
 chai.use(chaiHttp);
 
 const { expect } = chai;
 
 describe('User Tests', () => {
+
+  beforeEach(function() {
+    sinon.restore()
+  });
+
   it('Should return a token', async function() {
     sinon.stub(SequelizeUser, 'findOne').resolves(user as any);
     sinon.stub(Validations, 'validateLogin').returns();
@@ -29,13 +31,6 @@ describe('User Tests', () => {
 
     expect(status).to.equal(200);
     expect(body).to.have.key('token');
-  });
-
-  it('Should return a role', async function() {
-    const { status, body } = await chai.request(app).get('/login/role').set('Authorization', responseToken);
-
-    expect(status).to.equal(200);
-    expect(body).to.deep.equal({ role: 'user' });
   });
 
   it('Should return an error when an email is not sent', async function() {
@@ -98,15 +93,40 @@ describe('User Tests', () => {
   });
 
   it('Should return an error when the password is not valid', async function() {
-    sinon.stub(bcrypt, 'compare').resolves(false);
-
     const { status, body } = await chai.request(app)
     .post('/login')
-    .send(invalidPasswordUser);
+    .send({ email: 'admin@admin.com', password: '123456' });
 
     expect(status).to.equal(401);
     expect(body).to.deep.equal({ message: 'Invalid email or password' });
   });
 
-  afterEach(sinon.restore);
+  it('Should return a role', async function() {
+    const { status, body } = await chai.request(app).get('/login/role').set('Authorization', responseToken);
+
+    expect(status).to.equal(200);
+    expect(body).to.deep.equal({ role: 'user' });
+  });
+
+  it('Retorna erro caso não seja passado um token para /login/role', async function() {
+    const { status, body } = await chai.request(app).get('/login/role');
+
+    expect(status).to.equal(401);
+    expect(body).to.deep.equal({ message: 'Token not found' });
+  })
+
+  it('Retorna erro caso não seja passado um token valido para /login/role', async function() {
+    const { status, body } = await chai.request(app).get('/login/role').set('Authorization', invalidToken);
+
+    expect(status).to.equal(401);
+    expect(body).to.deep.equal({ message: 'Invalid Token' });
+  })
+
+  it('Retorna erro caso não seja passado um token com o type "Bearer" para /login/role', async function() {
+    const { status, body } = await chai.request(app).get('/login/role').set('Authorization', invalidTypeToken);
+
+    expect(status).to.equal(401);
+    expect(body).to.deep.equal({ message: 'Token must be a valid token' });
+  })
+
 });

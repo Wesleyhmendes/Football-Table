@@ -8,18 +8,14 @@ import SequelizeMatches from '../database/models/SequelizeMatches';
 import matchMocks from './mocks/Matches.mocks';
 import AuthValidation from '../middlewares/validations';
 
-import { Response } from 'superagent';
-import { token } from './mocks/User.mocks';
-
 chai.use(chaiHttp);
 
 const { expect } = chai;
 const { 
   match,
-  match2,
-  updateMatch,
   newMatch,
   newMatchBody,
+  invalidNewMatchBodyTeam,
   finishMatchMessage,
   matchInProgress,
   matchesFinished,
@@ -72,6 +68,17 @@ describe('Matches tests', () => {
     expect(body).to.deep.equal(finishMatchMessage);
   });
 
+  it('Should return an error when the match to finish is not found', async function() {
+    sinon.stub(SequelizeMatches, 'findByPk').resolves();
+
+    const { status, body } = await chai.request(app)
+    .patch('/matches/1/finish')
+    .set('Authorization', matchToken);
+
+    expect(status).to.equal(400);
+    expect(body).to.deep.equal({ message: 'Failed' });
+  });
+
   it('Should request for a token when user tries to finish a match', async function() {
     sinon.stub(SequelizeMatches, 'findByPk').resolves(match as any);
     sinon.stub(SequelizeMatches, 'update').resolves(undefined);
@@ -93,6 +100,17 @@ describe('Matches tests', () => {
 
     expect(status).to.equal(200);
     expect(body).to.deep.equal(match);
+  });
+
+  it('Should return an error when the match to update is not found', async function() {
+    sinon.stub(SequelizeMatches, 'findByPk').resolves();
+
+    const { status, body } = await chai.request(app)
+    .patch('/matches/1')
+    .set('Authorization', matchToken);
+
+    expect(status).to.equal(400);
+    expect(body).to.deep.equal({ message: 'Match not found' });
   });
 
   it('Should create a match', async function() {
@@ -127,6 +145,18 @@ describe('Matches tests', () => {
 
     expect(status).to.equal(422);
     expect(body).to.deep.equal({ "message": "It is not possible to create a match with two equal teams" });
+  });
+
+  it('Should return an error when a team is not found', async function() {
+    sinon.stub(SequelizeMatches, 'findOne').resolves();
+
+    const { status, body } = await chai.request(app)
+    .post('/matches')
+    .send(invalidNewMatchBodyTeam)
+    .set('Authorization', matchToken);
+
+    expect(status).to.equal(404);
+    expect(body).to.deep.equal({ message: 'There is no team with such id!' });
   });
 
   afterEach(sinon.restore);

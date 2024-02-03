@@ -23,6 +23,13 @@ const newMatchBody = {
   "awayTeamGoals": 2
 }
 
+const invalidNewMatchBodyTeam = {
+  "homeTeamId": 166,
+  "awayTeamId": 8,
+  "homeTeamGoals": 2,
+  "awayTeamGoals": 2
+}
+
 const invalidNewMatchBody = {
   "homeTeamId": 8,
   "awayTeamId": 8,
@@ -150,6 +157,7 @@ const allMatches = [
 
 export default {
   match,
+  invalidNewMatchBodyTeam,
   updateMatch,
   finishMatchMessage,
   matchInProgress,

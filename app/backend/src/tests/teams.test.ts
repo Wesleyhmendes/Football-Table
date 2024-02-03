@@ -7,13 +7,15 @@ import { app } from '../app';
 import SequelizeTeams from '../database/models/SequelizeTeams';
 import { teams, team } from './mocks/Teams.mocks';
 
-import { Response } from 'superagent';
-
 chai.use(chaiHttp);
 
 const { expect } = chai;
 
 describe('Teams tests', () => {
+  beforeEach(function() {
+    sinon.restore()
+  });
+
   it('Should return a team', async function() {
     sinon.stub(SequelizeTeams, 'findAll').resolves(teams as any);
 
@@ -32,5 +34,12 @@ describe('Teams tests', () => {
     expect(body).to.deep.equal(team);
   });
 
-  afterEach(sinon.restore);
+  it('Should return an error when the team is not found', async function() {
+    sinon.stub(SequelizeTeams, 'findByPk').resolves();
+
+    const { status, body } = await chai.request(app).get('/teams/500');
+
+    expect(status).to.equal(404);
+    expect(body).to.deep.equal({ message: 'Team not found' });
+  });
 });

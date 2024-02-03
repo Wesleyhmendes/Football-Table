@@ -9,7 +9,7 @@ type LoginResponse = {
 
 export default class LoginService {
   constructor(
-    private loginModel = new LoginModel(),
+    public loginModel = new LoginModel(),
   ) { }
 
   public async login(email: string, password: string): Promise<ServiceResponse<LoginResponse>> {
@@ -24,7 +24,7 @@ export default class LoginService {
     }
 
     const payload = { sub: user.id, role: user.role, email: user.email };
-    const secret = process.env.JWT_SECRET ?? 'jwt_secret';
+    const secret = 'jwt_secret';
 
     const token = jwt.sign(payload, secret, { expiresIn: '7d' });
 

@@ -1,10 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
-import SequelizeMatches from '../database/models/SequelizeMatches';
 
 export default class Validations {
-  private model = SequelizeMatches;
-
   static validateLogin(req: Request, res: Response, next: NextFunction): Response | void {
     const { email, password } = req.body;
     const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,7 +27,7 @@ export default class Validations {
     }
 
     try {
-      const secret = process.env.JWT_SECRET ?? 'jwt_secret';
+      const secret = 'jwt_secret';
       const payload = jwt.verify(token, secret);
       res.locals.auth = payload;
     } catch (err) {
