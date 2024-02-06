@@ -50,7 +50,7 @@ O projeto é composto de 4 entidades importantes para sua estrutura:
 
 Para o desenvolvimento, o time de produto disponibilizou um *Diagrama de Entidade-Relacionamento (DER)* para construir a modelagem do banco de dados.
 
-![Untitled](Table%20FC%20%E2%9A%BD%20cd6e14f5dcbe4fd5a1d28e7b0035e076/Untitled.png)
+![diagrama-er.png](./assets/diagrama-er.png)
 
 <aside>
 ⚠️ O `package.json` do diretório `app/backend` contém um script `db:reset` que é responsável por "dropar" o banco, recriar e executar as *migrations* e *seeders*. Você pode executá-lo dentro do container de backend com o comando `npm run db:reset` se por algum motivo precisar recriar a base de dados;
