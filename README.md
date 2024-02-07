@@ -63,6 +63,8 @@ Para o desenvolvimento, o time de produto disponibilizou um *Diagrama de Entida
 
 • Cada diretório (`frontend` e `backend`) possui suas próprias dependências - você pode instalá-las de forma rápida rodando o comando `npm run install:apps` na pasta raiz do projeto, ou rodando `npm install` dentro de cada diretório;
 
+• O front se comunica com serviço de back-end pela url http://localhost:3001 através dos endpoints. Basta acessar no seu computador para ver a aplicação rodando.
+
 ### Requisitos
 
 - **Fluxo 1**
