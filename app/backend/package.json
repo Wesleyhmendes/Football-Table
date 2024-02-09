@@ -4,7 +4,7 @@
   "description": "",
   "main": "./build/server",
   "engines": {
-    "node": "14.x"
+    "node": "18.x"
   },
   "scripts": {
     "test": "mocha -r ts-node/register ./src/tests/*$NAME*.{test,spec}.ts -t 10000 --exit",
